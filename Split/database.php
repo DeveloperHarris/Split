@@ -18,6 +18,16 @@ class Database
 	{
 		return $this->db->query($sql);
 	}
+	public function check_email($email)
+	{
+		$emailList = array();
+		$result = $this->db->query("SELECT email FROM users;");
+		while($row = $result->fetch_assoc())
+		{
+			$emailList[] = $row['email'];
+		}
+		return !in_array($email, $emailList);
+	}
 	public function getError()
 	{
 		return $this->db->error;
@@ -31,6 +41,12 @@ class Database
 			$row = $result->fetch_object();
 			return password_verify($pass, $row->password_hash);
 		}
+	}
+	public function createUser($email, $pass, $first_name, $last_name)
+	{
+		$sql = "INSERT INTO users (email, password_hash, first_name, last_name) VALUES ('";
+		$sql .= $email . "', '" . password_hash($pass, PASSWORD_DEFAULT) . "', '" . $first_name . "', '" . $last_name . "');";
+		$this->db->query($sql);
 	}
 }
 ?>
